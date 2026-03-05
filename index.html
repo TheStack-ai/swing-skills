@@ -135,17 +135,6 @@
   section { padding: 100px 24px; }
   .container { max-width: 1100px; margin: 0 auto; }
 
-  /* ===== SECTION SCROLL SCALE ===== */
-  .section-scale {
-    opacity: 0;
-    transform: scale(0.98) translateY(20px);
-    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .section-scale.visible {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-
   /* ===== HERO ===== */
   #hero {
     min-height: 100vh;
@@ -1297,36 +1286,121 @@
 
   .footer-link:hover { color: var(--text-muted); }
 
-  /* ===== MOBILE D ===== */
+  /* ===== MOBILE ===== */
   @media (max-width: 768px) {
     nav { padding: 12px 16px; }
     .nav-links { display: none; }
-    section { padding: 72px 16px; }
+    section { padding: 60px 16px; }
+
+    h1.hero-title {
+      font-size: 48px;
+      letter-spacing: -2px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+
     .hero-stats { gap: 24px; flex-wrap: wrap; }
-    .comparison-row { grid-template-columns: 1fr; gap: 8px; }
-    .cmp-arrow { transform: rotate(90deg); margin: 0 auto; }
-    .benchmark-total { flex-direction: column; text-align: center; }
-    .install-cta { flex-direction: column; align-items: flex-start; }
-    .footer-inner { flex-direction: column; align-items: flex-start; }
-    .demo-tabs { overflow-x: auto; }
 
-    /* D.10 — Hero comparison on mobile */
+    .hero-comparison { max-width: 100%; }
     .hero-cmp-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       font-size: 11px;
+      padding: 8px 12px;
+    }
+    .hcr-arrow { display: none; }
+
+    .install-cmd {
       flex-wrap: wrap;
-      gap: 6px;
+      padding: 12px 14px;
     }
-    .hcr-bad, .hcr-good {
+    .install-text {
       font-size: 11px;
-      line-height: 1.4;
-    }
-    .hero-comparison {
-      max-width: 100%;
+      width: 100%;
     }
 
-    /* D.11 — Terminal larger font on mobile */
+    .problem-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .comparison-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .cmp-arrow {
+      transform: rotate(90deg);
+      margin: 0 auto;
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    .cmp-before, .cmp-after {
+      padding: 14px 16px;
+      font-size: 12px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      letter-spacing: -1px;
+    }
+    .section-desc {
+      font-size: 15px;
+    }
+
     .terminal-body {
-      font-size: 14px;
+      padding: 16px;
+      font-size: 11px;
+      line-height: 1.6;
+      min-height: 280px;
+    }
+
+    .demo-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .benchmark-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .benchmark-total {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .bt-before { font-size: 36px; }
+    .bt-after { font-size: 48px; }
+    .bt-delta { font-size: 18px; }
+
+    .install-methods {
+      grid-template-columns: 1fr;
+    }
+
+    .install-cta {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .btn-primary, .btn-secondary {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .footer-left {
+      font-size: 12px;
+      line-height: 1.5;
     }
   }
 
@@ -1787,35 +1861,13 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ===== A.3 — Section scale transition on scroll ===== */
-const sectionScaleObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
+/* ===== HERO COMPARISON ANIMATION — staggered on load ===== */
+// Hero comparison rows are in the hero (visible on load), use a timeout
+setTimeout(() => {
+  document.querySelectorAll('.hero-cmp-row').forEach((row, i) => {
+    setTimeout(() => row.classList.add('visible'), i * 400);
   });
-}, { threshold: 0.08 });
-
-document.querySelectorAll('section').forEach(sec => {
-  sec.classList.add('section-scale');
-  sectionScaleObserver.observe(sec);
-});
-
-/* ===== HERO COMPARISON ANIMATION — A.2 staggered ===== */
-const heroCmpObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const rows = entry.target.querySelectorAll('.hero-cmp-row');
-      rows.forEach((row, i) => {
-        setTimeout(() => { row.classList.add('visible'); }, 400 + i * 400);
-      });
-      heroCmpObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.3 });
-
-const heroCmp = document.getElementById('hero-comparison');
-if (heroCmp) heroCmpObserver.observe(heroCmp);
+}, 1200); // after hero animations finish
 
 /* ===== C.7 — Count-up animation ===== */
 function easeOutQuart(t) {
@@ -2178,6 +2230,32 @@ document.querySelectorAll('.skill-card, .problem-card').forEach(card => {
     card.style.setProperty('--my', y);
   });
 });
+
+/* ===== SAFETY FALLBACK: force all reveals visible after 5s ===== */
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+    el.classList.add('visible');
+  });
+  // Also trigger benchmark bars if not yet animated
+  document.querySelectorAll('.benchmark-card').forEach(card => {
+    const wBefore = card.dataset.wBefore;
+    const wAfter = card.dataset.wAfter;
+    if (wBefore && wAfter) {
+      card.querySelectorAll('.bm-bar-before').forEach(b => {
+        if (!b.classList.contains('animated')) {
+          b.style.setProperty('--w-before', wBefore + '%');
+          b.classList.add('animated');
+        }
+      });
+      card.querySelectorAll('.bm-bar-after').forEach(b => {
+        if (!b.classList.contains('animated')) {
+          b.style.setProperty('--w-after', wAfter + '%');
+          b.classList.add('animated');
+        }
+      });
+    }
+  });
+}, 5000);
 </script>
 </body>
 </html>
