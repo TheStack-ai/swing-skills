@@ -7,6 +7,12 @@
 <meta property="og:title" content="Stack Skills — AI의 사고력을 쌓아올리다">
 <meta property="og:description" content="AI가 코드를 쓰는 방식이 아니라, 생각하는 방식을 업그레이드하는 7개 메타인지 스킬">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://raw.githubusercontent.com/whynowlab/stack-skills/main/assets/demo-hero.png">
+<meta property="og:url" content="https://whynowlab.github.io/stack-skills/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stack Skills — AI의 사고력을 쌓아올리다">
+<meta name="twitter:description" content="AI가 코드를 쓰는 방식이 아니라, 생각하는 방식을 업그레이드하는 7개 메타인지 스킬">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/whynowlab/stack-skills/main/assets/demo-hero.png">
 <title>Stack Skills — AI의 사고력을 쌓아올리다</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,6 +124,9 @@
     border-radius: var(--radius);
     text-decoration: none;
     transition: all 0.2s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .nav-cta:hover { background: var(--green); color: #000; }
@@ -125,6 +134,17 @@
   /* ===== SECTIONS ===== */
   section { padding: 100px 24px; }
   .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ===== SECTION SCROLL SCALE ===== */
+  .section-scale {
+    opacity: 0;
+    transform: scale(0.98) translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .section-scale.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 
   /* ===== HERO ===== */
   #hero {
@@ -136,13 +156,45 @@
     overflow: hidden;
   }
 
+  /* A.1 — Animated gradient mesh */
   .hero-bg {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(31,111,235,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(63,185,80,0.06) 0%, transparent 60%);
     pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(31,111,235,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(63,185,80,0.07) 0%, transparent 60%);
+    animation: meshShift 12s ease-in-out infinite alternate;
+  }
+
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 20% 60%, rgba(188,140,255,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 35% at 70% 20%, rgba(88,166,255,0.06) 0%, transparent 55%);
+    animation: meshShift2 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes meshShift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-20px, 15px) scale(1.03); }
+    66%  { transform: translate(15px, -10px) scale(0.98); }
+    100% { transform: translate(-10px, 20px) scale(1.02); }
+  }
+
+  @keyframes meshShift2 {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(25px, -18px) scale(1.05); }
+    100% { transform: translate(-15px, 12px) scale(0.97); }
   }
 
   .hero-grid {
@@ -273,10 +325,12 @@
     word-break: break-all;
   }
 
+  /* C.8 — Copy button with checkmark flash */
   .copy-btn {
     flex-shrink: 0;
     margin-left: 12px;
     padding: 6px 12px;
+    min-height: 44px;
     background: var(--bg3);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -286,12 +340,26 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
   }
 
   .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+  .copy-btn.copied {
+    border-color: var(--green);
+    color: var(--green);
+    animation: copyFlash 0.4s ease;
+  }
 
-  /* ===== HERO COMPARISON ===== */
+  @keyframes copyFlash {
+    0%   { background: rgba(63,185,80,0.25); }
+    100% { background: var(--bg3); }
+  }
+
+  /* ===== HERO COMPARISON — A.2 staggered typewriter ===== */
   .hero-comparison {
     margin-top: 40px;
     animation: fadeSlideIn 0.6s 0.55s ease both;
@@ -320,13 +388,27 @@
     font-size: 12px;
     line-height: 1.4;
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-16px);
     transition: opacity 0.5s ease, transform 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    /* Left border accent */
+    border-left: 3px solid transparent;
   }
 
+  .hero-cmp-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0;
+  }
+
+  /* Green accent for rows that have a ✅ good side */
   .hero-cmp-row.visible {
     opacity: 1;
     transform: translateX(0);
+    border-left-color: rgba(63,185,80,0.5);
   }
 
   .hero-cmp-row:nth-child(2) { transition-delay: 0.1s; }
@@ -360,6 +442,7 @@
     gap: 4px;
   }
 
+  /* C.7 — Count-up stat numbers */
   .stat-num {
     font-family: var(--font-display);
     font-size: 28px;
@@ -436,6 +519,7 @@
     margin-top: 60px;
   }
 
+  /* A.4 — Card hover glow with radial gradient */
   .problem-card {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -443,13 +527,27 @@
     padding: 28px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.3s, transform 0.3s;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+
+  .problem-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(248,81,73,0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
   }
 
   .problem-card:hover {
     border-color: var(--red);
     transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(248,81,73,0.12), 0 0 0 1px rgba(248,81,73,0.1);
   }
+
+  .problem-card:hover::after { opacity: 1; }
 
   .problem-card::before {
     content: '';
@@ -459,6 +557,7 @@
     background: linear-gradient(90deg, var(--red), transparent);
     opacity: 0;
     transition: opacity 0.3s;
+    z-index: 1;
   }
 
   .problem-card:hover::before { opacity: 1; }
@@ -598,6 +697,7 @@
     border-left: none;
     border-right: none;
     border-radius: 0;
+    min-height: 44px;
   }
 
   .demo-tab:hover { color: var(--text); }
@@ -681,6 +781,7 @@
     margin-left: 1px;
   }
 
+  /* B.6 — Probability bars animate from 0 with cubic-bezier */
   .option-bar {
     display: inline-block;
     height: 10px;
@@ -688,7 +789,12 @@
     border-radius: 2px;
     margin: 0 6px;
     vertical-align: middle;
-    transition: width 0.5s ease;
+    width: 0;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .option-bar.animated {
+    /* width set via JS */
   }
 
   .replay-btn {
@@ -703,6 +809,7 @@
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 8px 14px;
+    min-height: 44px;
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -723,6 +830,7 @@
     margin-top: 60px;
   }
 
+  /* A.4 + C.9 — Card hover glow + shimmer */
   .skill-card {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -734,20 +842,50 @@
     overflow: hidden;
   }
 
+  /* Shimmer effect layer */
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255,255,255,0.04) 50%,
+      transparent 70%
+    );
+    pointer-events: none;
+    transition: left 0s;
+  }
+
+  .skill-card:hover::before {
+    left: 160%;
+    transition: left 0.6s ease;
+  }
+
+  /* Radial glow on border */
   .skill-card::after {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: var(--radius-lg);
-    background: linear-gradient(135deg, transparent 60%, rgba(88,166,255,0.04));
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(88,166,255,0.06) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.3s;
     pointer-events: none;
   }
 
   .skill-card:hover {
     border-color: var(--accent-dim);
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(31,111,235,0.15);
+    box-shadow:
+      0 12px 40px rgba(31,111,235,0.15),
+      0 0 0 1px rgba(88,166,255,0.15);
   }
+
+  .skill-card:hover::after { opacity: 1; }
 
   .skill-num {
     font-family: var(--font-mono);
@@ -832,6 +970,7 @@
     align-items: center;
   }
 
+  /* C.7 — Count-up numbers */
   .bm-num {
     font-family: var(--font-display);
     font-weight: 800;
@@ -879,6 +1018,7 @@
     background: var(--text-subtle);
     border-radius: 2px;
     transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0;
   }
 
   .bm-bar-after {
@@ -887,7 +1027,11 @@
     border-radius: 2px;
     transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
     margin-top: 6px;
+    width: 0;
   }
+
+  .bm-bar-before.animated { width: var(--w-before); }
+  .bm-bar-after.animated { width: var(--w-after); }
 
   .benchmark-total {
     margin-top: 40px;
@@ -1017,9 +1161,11 @@
 
   .code-block .prompt-char { color: var(--text-subtle); margin-right: 8px; }
 
+  /* C.8 — code copy button */
   .code-copy {
     flex-shrink: 0;
     padding: 4px 8px;
+    min-height: 44px;
     background: var(--bg3);
     border: 1px solid var(--border);
     border-radius: 4px;
@@ -1028,10 +1174,19 @@
     cursor: pointer;
     transition: all 0.2s;
     font-family: var(--font-mono);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    position: relative;
+    overflow: hidden;
   }
 
   .code-copy:hover { color: var(--accent); border-color: var(--accent); }
-  .code-copy.copied { color: var(--green); border-color: var(--green); }
+  .code-copy.copied {
+    color: var(--green);
+    border-color: var(--green);
+    animation: copyFlash 0.4s ease;
+  }
 
   .install-cta {
     display: flex;
@@ -1046,6 +1201,7 @@
     align-items: center;
     gap: 10px;
     padding: 16px 32px;
+    min-height: 44px;
     background: var(--accent-dim);
     border: 1px solid var(--accent);
     border-radius: var(--radius-lg);
@@ -1079,6 +1235,7 @@
     align-items: center;
     gap: 8px;
     padding: 16px 24px;
+    min-height: 44px;
     background: transparent;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -1133,11 +1290,14 @@
     color: var(--text-subtle);
     text-decoration: none;
     transition: color 0.2s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .footer-link:hover { color: var(--text-muted); }
 
-  /* ===== MOBILE ===== */
+  /* ===== MOBILE D ===== */
   @media (max-width: 768px) {
     nav { padding: 12px 16px; }
     .nav-links { display: none; }
@@ -1149,7 +1309,25 @@
     .install-cta { flex-direction: column; align-items: flex-start; }
     .footer-inner { flex-direction: column; align-items: flex-start; }
     .demo-tabs { overflow-x: auto; }
-    .hero-cmp-row { font-size: 11px; }
+
+    /* D.10 — Hero comparison on mobile */
+    .hero-cmp-row {
+      font-size: 11px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .hcr-bad, .hcr-good {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .hero-comparison {
+      max-width: 100%;
+    }
+
+    /* D.11 — Terminal larger font on mobile */
+    .terminal-body {
+      font-size: 14px;
+    }
   }
 
   /* ===== MISC EFFECTS ===== */
@@ -1161,13 +1339,6 @@
     border-top: 1px solid var(--border);
     margin: 0;
   }
-
-  /* Progress bar animation */
-  .bm-bar-before, .bm-bar-after {
-    width: 0;
-  }
-  .bm-bar-before.animated { width: var(--w-before); }
-  .bm-bar-after.animated { width: var(--w-after); }
 </style>
 </head>
 <body>
@@ -1232,11 +1403,11 @@
     </div>
     <div class="hero-stats">
       <div class="stat">
-        <span class="stat-num">7</span>
+        <span class="stat-num" data-target="7" data-suffix="">7</span>
         <span class="stat-label">메타인지 스킬</span>
       </div>
       <div class="stat">
-        <span class="stat-num">+85%</span>
+        <span class="stat-num" data-target="85" data-suffix="%+" data-prefix="+">+85%</span>
         <span class="stat-label">평균 향상</span>
       </div>
       <div class="stat">
@@ -1467,16 +1638,16 @@
         <div class="bm-label">리서치 품질</div>
         <div class="bm-scores">
           <div class="bm-score">
-            <div class="bm-num before">5</div>
+            <div class="bm-num before" data-countup-from="0" data-countup-to="5">5</div>
             <div class="bm-sublabel">적용 전</div>
           </div>
           <div class="bm-arrow">→</div>
           <div class="bm-score">
-            <div class="bm-num after">9</div>
+            <div class="bm-num after" data-countup-from="0" data-countup-to="9">9</div>
             <div class="bm-sublabel">적용 후</div>
           </div>
         </div>
-        <span class="bm-delta">+80%</span>
+        <span class="bm-delta" data-countup-pct data-countup-to="80">+80%</span>
         <div class="bm-bar-track">
           <div class="bm-bar-before" style="--w-before:50%;--w-after:90%"></div>
         </div>
@@ -1488,16 +1659,16 @@
         <div class="bm-label">의사결정 폭</div>
         <div class="bm-scores">
           <div class="bm-score">
-            <div class="bm-num before">5</div>
+            <div class="bm-num before" data-countup-from="0" data-countup-to="5">5</div>
             <div class="bm-sublabel">적용 전</div>
           </div>
           <div class="bm-arrow">→</div>
           <div class="bm-score">
-            <div class="bm-num after">9</div>
+            <div class="bm-num after" data-countup-from="0" data-countup-to="9">9</div>
             <div class="bm-sublabel">적용 후</div>
           </div>
         </div>
-        <span class="bm-delta">+80%</span>
+        <span class="bm-delta" data-countup-pct data-countup-to="80">+80%</span>
         <div class="bm-bar-track">
           <div class="bm-bar-before" style="--w-before:50%;--w-after:90%"></div>
         </div>
@@ -1509,16 +1680,16 @@
         <div class="bm-label">리뷰 깊이</div>
         <div class="bm-scores">
           <div class="bm-score">
-            <div class="bm-num before">4</div>
+            <div class="bm-num before" data-countup-from="0" data-countup-to="4">4</div>
             <div class="bm-sublabel">적용 전</div>
           </div>
           <div class="bm-arrow">→</div>
           <div class="bm-score">
-            <div class="bm-num after">8</div>
+            <div class="bm-num after" data-countup-from="0" data-countup-to="8">8</div>
             <div class="bm-sublabel">적용 후</div>
           </div>
         </div>
-        <span class="bm-delta">+100%</span>
+        <span class="bm-delta" data-countup-pct data-countup-to="100">+100%</span>
         <div class="bm-bar-track">
           <div class="bm-bar-before" style="--w-before:40%;--w-after:80%"></div>
         </div>
@@ -1534,7 +1705,7 @@
         <div style="font-size:32px;color:var(--text-subtle);padding-bottom:8px;">→</div>
         <div class="bt-after">8.7</div>
       </div>
-      <div class="bt-delta">+85% avg</div>
+      <div class="bt-delta" data-countup-pct data-countup-to="85">+85% avg</div>
     </div>
   </div>
 </section>
@@ -1616,13 +1787,27 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ===== HERO COMPARISON ANIMATION ===== */
+/* ===== A.3 — Section scale transition on scroll ===== */
+const sectionScaleObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('section').forEach(sec => {
+  sec.classList.add('section-scale');
+  sectionScaleObserver.observe(sec);
+});
+
+/* ===== HERO COMPARISON ANIMATION — A.2 staggered ===== */
 const heroCmpObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const rows = entry.target.querySelectorAll('.hero-cmp-row');
       rows.forEach((row, i) => {
-        setTimeout(() => { row.classList.add('visible'); }, 300 + i * 150);
+        setTimeout(() => { row.classList.add('visible'); }, 400 + i * 400);
       });
       heroCmpObserver.unobserve(entry.target);
     }
@@ -1631,6 +1816,52 @@ const heroCmpObserver = new IntersectionObserver((entries) => {
 
 const heroCmp = document.getElementById('hero-comparison');
 if (heroCmp) heroCmpObserver.observe(heroCmp);
+
+/* ===== C.7 — Count-up animation ===== */
+function easeOutQuart(t) {
+  return 1 - Math.pow(1 - t, 4);
+}
+
+function animateCountUp(el, from, to, duration, suffix, prefix) {
+  const isFloat = String(to).includes('.');
+  const start = performance.now();
+  suffix = suffix || '';
+  prefix = prefix || '';
+  function step(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeOutQuart(progress);
+    const current = from + (to - from) * eased;
+    el.textContent = prefix + (isFloat ? current.toFixed(1) : Math.round(current)) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const countUpObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const to = parseFloat(el.dataset.countupTo);
+      const from = parseFloat(el.dataset.countupFrom || '0');
+      const isPct = el.hasAttribute('data-countup-pct');
+      if (isPct) {
+        animateCountUp(el, 0, to, 1200, '% avg', '+');
+        // Fix: handle both "+X%" and "+X% avg" forms
+        const rawSuffix = el.textContent.includes('avg') ? '% avg' : '%';
+        const rawPrefix = '+';
+        animateCountUp(el, 0, to, 1200, rawSuffix, rawPrefix);
+      } else {
+        animateCountUp(el, from, to, 1000, '', '');
+      }
+      countUpObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-countup-to]').forEach(el => {
+  countUpObserver.observe(el);
+});
 
 /* ===== BENCHMARK BARS ===== */
 const barObserver = new IntersectionObserver((entries) => {
@@ -1641,11 +1872,11 @@ const barObserver = new IntersectionObserver((entries) => {
       const wAfter = card.dataset.wAfter;
       card.querySelectorAll('.bm-bar-before').forEach(b => {
         b.style.setProperty('--w-before', wBefore + '%');
-        setTimeout(() => { b.style.width = wBefore + '%'; }, 200);
+        setTimeout(() => { b.classList.add('animated'); }, 200);
       });
       card.querySelectorAll('.bm-bar-after').forEach(b => {
         b.style.setProperty('--w-after', wAfter + '%');
-        setTimeout(() => { b.style.width = wAfter + '%'; }, 400);
+        setTimeout(() => { b.classList.add('animated'); }, 400);
       });
       barObserver.unobserve(card);
     }
@@ -1654,20 +1885,25 @@ const barObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.benchmark-card').forEach(c => barObserver.observe(c));
 
-/* ===== COPY FUNCTIONS ===== */
+/* ===== C.8 — Copy button with checkmark ===== */
+function setCopied(btn) {
+  btn.innerHTML = '&#10003; copied';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = 'copy';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
 function copyHero(btn) {
   navigator.clipboard.writeText('npx skills add whynowlab/stack-skills --all').then(() => {
-    btn.textContent = 'copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    setCopied(btn);
   });
 }
 
 function copyCode(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    setCopied(btn);
   });
 }
 
@@ -1747,7 +1983,7 @@ class TerminalAnimator {
   }
 }
 
-/* ===== CREATIVITY DEMO ===== */
+/* ===== B.5+B.6 — CREATIVITY DEMO (delays cut ~40%, bars animate from 0) ===== */
 let creativityAnimator = null;
 let creativityPlayed = false;
 
@@ -1766,48 +2002,58 @@ async function playCreativity() {
   const blank = (delay) => { t += delay; return A.addBlankLine(t); };
 
   await line(`<span style="color:var(--text-subtle)"># 메타인지 스킬: creativity-sampler</span>`, 0);
-  await blank(80);
-  await line(`<span style="color:var(--green)">$</span> <span style="color:var(--text)">/creativity-sampler Which database for real-time analytics?</span>`, 150);
-  await blank(60);
-  await line(`<span style="color:var(--text-subtle)">⟳ 확률 공간 샘플링 중...</span>`, 300);
-  await blank(60);
-  await line(`<span style="color:var(--purple)">━━ 옵션 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 450);
-  await blank(50);
+  await blank(48);
+  await line(`<span style="color:var(--green)">$</span> <span style="color:var(--text)">/creativity-sampler Which database for real-time analytics?</span>`, 90);
+  await blank(36);
+  await line(`<span style="color:var(--text-subtle)">⟳ 확률 공간 샘플링 중...</span>`, 180);
+  await blank(36);
+  await line(`<span style="color:var(--purple)">━━ 옵션 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 270);
+  await blank(30);
 
   const options = [
-    { n: '1', name: 'ClickHouse', p: '35%', barW: 35, color: '--accent' },
-    { n: '2', name: 'TimescaleDB', p: '25%', barW: 25, color: '--accent' },
-    { n: '3', name: 'Apache Druid', p: '20%', barW: 20, color: '--accent' },
+    { n: '1', name: 'ClickHouse',       p: '35%', barW: 35, color: '--accent' },
+    { n: '2', name: 'TimescaleDB',      p: '25%', barW: 25, color: '--accent' },
+    { n: '3', name: 'Apache Druid',     p: '20%', barW: 20, color: '--accent' },
     { n: '4', name: 'DuckDB + Parquet', p: '12%', barW: 12, color: '--purple' },
     { n: '5', name: 'SQLite + cr-sqlite', p: '8%', barW: 8, color: '--orange', tag: '⚡ 비관습적' },
   ];
 
   for (const opt of options) {
-    const barHtml = `<span style="display:inline-block;width:${opt.barW * 2}px;height:8px;background:var(${opt.color});border-radius:2px;vertical-align:middle;margin:0 6px;opacity:0.8"></span>`;
+    // B.6: bar starts at width 0, animates to target after appearing
+    const barId = `bar-${opt.n}-${Date.now()}`;
     const tagHtml = opt.tag ? ` <span style="color:var(--orange);font-size:11px">${opt.tag}</span>` : '';
-    await line(
-      `  <span style="color:var(--text-subtle)">${opt.n}.</span> <span style="color:var(${opt.color})">${opt.name}</span>${barHtml}<span style="color:var(--text-subtle)">p ≈ ${opt.p}</span>${tagHtml}`,
-      380
+    const lineEl = await line(
+      `  <span style="color:var(--text-subtle)">${opt.n}.</span> <span style="color:var(${opt.color})">${opt.name}</span><span class="option-bar" id="${barId}" data-target-w="${opt.barW * 2}"></span><span style="color:var(--text-subtle)">p ≈ ${opt.p}</span>${tagHtml}`,
+      228
     );
+    // Trigger bar animation after a tick
+    setTimeout(() => {
+      const barEl = document.getElementById(barId);
+      if (barEl) {
+        barEl.style.background = `var(${opt.color})`;
+        barEl.style.width = opt.barW * 2 + 'px';
+      }
+    }, 60);
   }
 
-  await blank(60);
-  await line(`<span style="color:var(--purple)">━━ 숨겨진 가정 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 300);
-  await blank(50);
-  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">"실시간"이 &lt;100ms 쿼리인지 초 단위 수집인지 불명확</span>`, 250);
-  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">규모: 1GB/일 vs 1TB/일이면 최적 경로가 달라짐</span>`, 250);
-  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">운영 복잡도 예산 미지정</span>`, 250);
-  await blank(50);
-  await line(`<span style="color:var(--green)">✓ 전형성 편향 극복 — 5개 고유 경로 도출</span>`, 300);
+  await blank(36);
+  await line(`<span style="color:var(--purple)">━━ 숨겨진 가정 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 180);
+  await blank(30);
+  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">"실시간"이 &lt;100ms 쿼리인지 초 단위 수집인지 불명확</span>`, 150);
+  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">규모: 1GB/일 vs 1TB/일이면 최적 경로가 달라짐</span>`, 150);
+  await line(`  <span style="color:var(--text-subtle)">→</span> <span style="color:var(--text)">운영 복잡도 예산 미지정</span>`, 150);
+  await blank(30);
+  await line(`<span style="color:var(--green)">✓ 전형성 편향 극복 — 5개 고유 경로 도출</span>`, 180);
 
   creativityPlayed = true;
 }
 
 function replayCreativity() {
+  creativityPlayed = false;
   playCreativity();
 }
 
-/* ===== ADVERSARIAL DEMO ===== */
+/* ===== B.5 — ADVERSARIAL DEMO (delays cut ~40%) ===== */
 let adversarialAnimator = null;
 let adversarialPlayed = false;
 
@@ -1826,12 +2072,12 @@ async function playAdversarial() {
   const blank = (delay) => { t += delay; return A.addBlankLine(t); };
 
   await line(`<span style="color:var(--text-subtle)"># 메타인지 스킬: adversarial-review</span>`, 0);
-  await blank(80);
-  await line(`<span style="color:var(--green)">$</span> <span style="color:var(--text)">/adversarial-review "Migrate auth from JWT to session-based"</span>`, 150);
-  await blank(60);
-  await line(`<span style="color:var(--text-subtle)">⟳ 악마의 변호인 분석 실행 중...</span>`, 300);
-  await line(`<span style="color:var(--text-subtle)">⟳ 공격 벡터 생성 중 (최소 3개 이슈 필수)...</span>`, 450);
-  await blank(60);
+  await blank(48);
+  await line(`<span style="color:var(--green)">$</span> <span style="color:var(--text)">/adversarial-review "Migrate auth from JWT to session-based"</span>`, 90);
+  await blank(36);
+  await line(`<span style="color:var(--text-subtle)">⟳ 악마의 변호인 분석 실행 중...</span>`, 180);
+  await line(`<span style="color:var(--text-subtle)">⟳ 공격 벡터 생성 중 (최소 3개 이슈 필수)...</span>`, 270);
+  await blank(36);
 
   const vectors = [
     {
@@ -1863,24 +2109,25 @@ async function playAdversarial() {
   for (const v of vectors) {
     await line(
       `<span style="color:var(--red);font-weight:bold">▶ 공격 벡터 ${v.n}: ${v.title}</span>`,
-      550
+      330
     );
     for (const point of v.points) {
-      await line(`  <span style="color:var(--text-subtle)">•</span> <span style="color:var(--text-muted)">${point}</span>`, 250);
+      await line(`  <span style="color:var(--text-subtle)">•</span> <span style="color:var(--text-muted)">${point}</span>`, 150);
     }
-    await blank(60);
+    await blank(36);
   }
 
-  await line(`<span style="color:var(--purple)">━━ 판정 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 250);
-  await blank(50);
-  await line(`<span style="color:var(--gold);font-weight:bold">⚠  조건부 통과</span>`, 350);
-  await line(`<span style="color:var(--text-muted)">   벡터 1(인프라)과 벡터 2(모바일) 해결 후 진행하세요.</span>`, 200);
-  await line(`<span style="color:var(--text-muted)">   벡터 3은 이중 인증 기간이 포함된 단계적 배포 계획 필요.</span>`, 200);
+  await line(`<span style="color:var(--purple)">━━ 판정 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`, 150);
+  await blank(30);
+  await line(`<span style="color:var(--gold);font-weight:bold">⚠  조건부 통과</span>`, 210);
+  await line(`<span style="color:var(--text-muted)">   벡터 1(인프라)과 벡터 2(모바일) 해결 후 진행하세요.</span>`, 120);
+  await line(`<span style="color:var(--text-muted)">   벡터 3은 이중 인증 기간이 포함된 단계적 배포 계획 필요.</span>`, 120);
 
   adversarialPlayed = true;
 }
 
 function replayAdversarial() {
+  adversarialPlayed = false;
   playAdversarial();
 }
 
@@ -1919,6 +2166,17 @@ document.querySelector('.demo-tab[onclick*="adversarial"]').addEventListener('cl
     setTimeout(playAdversarial, 250);
     adversarialPlayed = true;
   }
+});
+
+/* ===== A.4 — Radial glow follows mouse on cards ===== */
+document.querySelectorAll('.skill-card, .problem-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
+    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
+    card.style.setProperty('--mx', x);
+    card.style.setProperty('--my', y);
+  });
 });
 </script>
 </body>
