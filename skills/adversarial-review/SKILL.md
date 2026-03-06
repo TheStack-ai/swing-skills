@@ -12,7 +12,7 @@ Structured Devil's Advocate analysis that surfaces hidden flaws, edge cases, and
 
 ## Rules (Absolute)
 
-1. **Always find problems.** Even if the code/decision looks good, find at least 3 substantive concerns. "Looks good to me" is not an acceptable output.
+1. **Default to finding problems.** Actively search for at least 3 substantive concerns across all vectors. If after rigorous analysis fewer than 3 genuine issues exist, report what you found with a note explaining why the remaining vectors produced no material findings. Never fabricate issues to meet a quota, but never settle for a shallow pass either.
 2. **Attack the strongest points.** Don't waste time on trivial issues. Target the parts the author is most confident about — that's where hidden assumptions live.
 3. **Separate severity levels.** Not all issues are equal. Clearly distinguish critical from minor.
 4. **Propose alternatives.** Every criticism must include a concrete alternative or mitigation.
@@ -158,10 +158,12 @@ When reviewing pull requests:
 - Trivial changes (typos, formatting)
 - When exploration is needed first (use `cross-verified-research`)
 - When generating alternatives (use `creativity-sampler`)
+- When you need neutral, exhaustive analysis without a verdict (use `deep-dive-analyzer` — it understands; this skill *challenges*)
 - Personal preferences or subjective design choices
 
 ## Integration Notes
 
 - **With creativity-sampler:** After adversarial review reveals problems, use creativity-sampler to generate alternative approaches
-- **With cross-verified-research:** Use research to verify claims made during review (e.g., "is this really a security risk?")
+- **With cross-verified-research:** Use research to verify claims made during review (e.g., "is this really a security risk?"). For a full-rigor workflow: `cross-verified-research` → `adversarial-review`
+- **With deep-dive-analyzer:** For understanding before challenging: `deep-dive-analyzer` (understand) → `adversarial-review` (challenge). This skill focuses on finding flaws; deep-dive focuses on neutral exhaustive analysis.
 - **With orchestrator strategy team:** Complements the strategy team's Devil's Advocate agent with structured methodology

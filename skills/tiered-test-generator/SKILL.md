@@ -16,7 +16,7 @@ Multi-level verification question and test scenario generator.
 2. **Difficulty must be genuine.** Tier 3 questions should be genuinely hard, not just verbose versions of Tier 1.
 3. **Coverage must be systematic.** Questions should cover the full topic, not cluster around one subtopic.
 4. **Source traceability.** For code-based questions, every question must reference specific files, lines, or behaviors.
-5. **No answer leakage.** Questions must not contain hints that give away the answer.
+5. **No answer leakage.** Questions must not contain hints that give away the answer. After generating questions, re-read each one and verify no phrasing, emphasis, or structural pattern reveals the correct answer.
 
 ## Tier System
 
@@ -187,14 +187,26 @@ When user submits answers:
 ```markdown
 ## Results: [Topic]
 
-### Score: [X]/100
+### Score: [X]/[Total] ([percentage]%)
+
+Scoring weights by tier:
+- Tier 1 (Conceptual): 5 pts each (×3 = 15)
+- Tier 2 (Applied): 10 pts each (×3 = 30)
+- Tier 3 (Expert): 15 pts each (×3 = 45)
+- **Total: 90 points**
 
 ### Answer Review
 | Q# | Tier | Result | Score |
 |----|------|--------|-------|
-| 1  | T1   | O/X    | /10   |
-| 2  | T1   | O/X    | /10   |
-| ...| ...  | ...    | ...   |
+| 1  | T1   | O/X    | /5    |
+| 2  | T1   | O/X    | /5    |
+| 3  | T1   | O/X    | /5    |
+| 4  | T2   | O/X    | /10   |
+| 5  | T2   | O/X    | /10   |
+| 6  | T2   | O/X    | /10   |
+| 7  | T3   | O/X    | /15   |
+| 8  | T3   | O/X    | /15   |
+| 9  | T3   | O/X    | /15   |
 
 ### Detailed Feedback
 

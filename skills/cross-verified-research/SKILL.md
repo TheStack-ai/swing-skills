@@ -14,7 +14,7 @@ Systematic research engine with anti-hallucination safeguards and source quality
 
 1. **Never fabricate sources.** No fake URLs, no invented papers, no hallucinated statistics.
 2. **Confidence gate.** If confidence < 90% on a factual claim, do NOT present it as fact. State uncertainty explicitly.
-3. **No speculation language.** Ban: "아마도", "~인 것 같습니다", "probably", "I think". Either verified or explicitly unknown.
+3. **No speculation as fact.** Do not present unverified claims using hedging language as if they were findings. Banned patterns: "아마도", "~인 것 같습니다", "~로 보입니다", "~수도 있습니다", "probably", "I think", "seems like", "appears to be", "likely". If a claim is not verified, label it explicitly as **Unverified** or **Contested** — do not soften it with hedging.
 4. **BLUF output.** Lead with conclusion, follow with evidence. Never bury the answer.
 5. **Minimum effort.** At least 5 distinct search queries per research task. At least 5 verified sources in final output.
 6. **Cross-verify.** Every key claim must appear in 2+ independent sources before presenting as fact.
@@ -58,6 +58,12 @@ Query 3: [topic] + [current year] + "review"
 Query 4: [topic] + "issues" or "problems" or "limitations"
 Query 5: [topic] + site:github.com (issues, discussions)
 ```
+
+**Fallback when WebSearch is unavailable or returns no results:**
+1. Use WebFetch to directly access known authoritative URLs (official docs, GitHub repos, Wikipedia)
+2. Rely on internal knowledge but label all claims as **Unverified (no external search available)**
+3. Ask the user to provide source URLs or documents for verification
+4. Reduce the minimum source requirement but maintain cross-verification where possible
 
 ### Stage 3: Cross-Verify
 
@@ -121,14 +127,31 @@ Produce the final report in BLUF format.
 
 ## Source Tiers
 
-Classify every source on discovery. See `references/source-tiers.md` for detailed criteria.
+Classify every source on discovery.
 
-| Tier | Label | Trust Level |
-|------|-------|-------------|
-| S | 🏛️ | Academic, peer-reviewed, primary research, official specs |
-| A | 🛡️ | Government, .edu, major press (Reuters/AP/BBC), official docs |
-| B | ⚠️ | Social media, forums, personal blogs, wikis — flag to user |
-| C | (none) | General websites not fitting above categories |
+| Tier | Label | Trust Level | Examples |
+|------|-------|-------------|----------|
+| S | 🏛️ | Academic, peer-reviewed, primary research, official specs | Google Scholar, arXiv, PubMed, W3C/IETF RFCs, language specs (ECMAScript, PEPs) |
+| A | 🛡️ | Government, .edu, major press, official docs | .gov/.edu, Reuters/AP/BBC, official framework docs, company engineering blogs (Google AI, Netflix Tech) |
+| B | ⚠️ | Social media, forums, personal blogs, wikis — flag to user | Twitter/X, Reddit, StackOverflow, Medium, dev.to, Wikipedia, 나무위키 |
+| C | (none) | General websites not fitting above categories | Corporate marketing, press releases, SEO content, news aggregators |
+
+### Tier Classification Rules
+
+- **Company's own content about their product:**
+  - Official docs → Tier A
+  - Feature announcements → Tier A (existence), Tier B (performance claims)
+  - Marketing pages → Tier C
+- **GitHub:**
+  - Official repos (e.g., facebook/react) → Tier A
+  - Issues/Discussions with reproduction → Tier A (for bug existence)
+  - Random user repos → Tier B
+- **Benchmarks:**
+  - Independent, reproducible, methodology disclosed → Tier S
+  - Official by neutral party → Tier A
+  - Vendor's own benchmarks → Tier B (note bias)
+- **StackOverflow:** Accepted answers with high votes = borderline Tier A; non-accepted = Tier B
+- **Tier B sources must never be cited alone** — corroborate with Tier S or A
 
 ## When to Use
 

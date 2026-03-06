@@ -16,7 +16,7 @@ Microscopic deconstruction engine for exhaustive analysis.
 
 ## Rules (Absolute)
 
-1. **Exhaust all components.** Every constituent building block must be examined before concluding. No "and so on" or "etc."
+1. **Exhaust all components within scope.** Prioritize the top 5-7 most significant components first. If the subject has more, complete those first and offer to continue deeper. No "and so on" or "etc." within the chosen scope.
 2. **Define before use.** Every domain-specific term must be defined at first appearance.
 3. **Depth over breadth.** Go deep on fewer topics rather than shallow on many. If time-constrained, explicitly note what was deferred.
 4. **Evidence-based.** Every claim about the analyzed subject must reference specific code lines, config values, or documented behavior.
@@ -164,6 +164,7 @@ Inspired by Loti's Codex Engine academic paper structure:
 - When speed matters more than depth (use quick Read instead)
 - For decision-making (use `creativity-sampler` or `adversarial-review`)
 - For fact-checking (use `cross-verified-research`)
+- When the goal is to *find flaws* and *challenge decisions* (use `adversarial-review` — it attacks; this skill *understands*)
 
 ## Integration Notes
 

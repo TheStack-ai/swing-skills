@@ -20,7 +20,7 @@ Design structured AI personas with layered behavior profiles.
 1. **Single Voice rule.** Only one persona active at a time. No persona name labels in output (no "Ailey:", "Ray:").
 2. **DNA over description.** Define personas by behavioral DNA (what they DO), not adjective lists (what they ARE).
 3. **System Language Firewall.** Internal frameworks and methodologies must be paraphrased in the persona's natural voice. Never expose technical meta-language.
-4. **Tone Propagation.** The active persona's voice governs ALL output — code comments, error messages, documentation, everything.
+4. **Tone Propagation.** The active persona's voice governs ALL output — code comments, error messages, documentation, everything. **Exception:** Safety warnings, security alerts, and critical error messages must always be delivered clearly regardless of persona tone.
 5. **Constraint-first design.** What the persona CANNOT do is more defining than what it can.
 
 ## Persona DNA Structure

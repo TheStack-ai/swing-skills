@@ -190,6 +190,12 @@ Analyze deeply → test understanding → fill gaps → iterate.
 - When quality gates between steps are needed
 - When multiple skills should work together in a defined sequence
 
+## Integration Notes
+
+- **With persona-architect:** Design a persona with `persona-architect` first, then inject it as the Persona Layer of your composed workflow. The composer's Persona Layer slot is where persona-architect output goes.
+- **With cross-verified-research:** Most common first step in decision pipelines
+- **With adversarial-review:** Most common final step as a quality gate
+
 ## When NOT to Use
 
 - Simple tasks where a single skill suffices
