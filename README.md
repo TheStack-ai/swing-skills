@@ -4,9 +4,9 @@
   <a href="README.md">English</a> · <a href="README.ko.md">한국어 (Korean)</a>
 </p>
 
-**5 cognitive firewalls for your AI coding agent.**
+**Catch satisficing decisions before they ship.**
 
-Each one defends against a specific reasoning failure — hallucination, anchoring bias, confirmation bias, black-box logic, and blind optimism.
+Your AI picks the safe default, agrees when it should push back, cites no sources, hides its reasoning, and assumes everything will work. These are six distinct cognitive failures. Stack Skills installs a firewall against each one.
 
 ```
 npx skills add whynowlab/stack-skills --all
@@ -17,37 +17,78 @@ npx skills add whynowlab/stack-skills --all
 
 ---
 
-## The Problem
+## See the Difference
 
-Your AI writes code fast. But it reasons poorly.
+### Before: Default AI Research
 
-Ask it to choose a database — it says "use PostgreSQL." The safe default, every time.
+> **You:** Is SQLite viable for an app with 1000 concurrent users?
+>
+> **AI:** No, SQLite is not suitable for high-concurrency applications. Use PostgreSQL or MySQL instead for production workloads.
 
-Ask it to review your architecture — it says "looks good." Agreeing is easier than thinking.
+### After: With `cross-verified-research`
 
-Ask it to research a claim — it makes up a plausible answer you can't distinguish from fact.
+> **You:** /cross-verified-research Is SQLite viable for an app with 1000 concurrent users?
+>
+> **AI:** **Yes, with caveats.** 1000 concurrent users ≠ 1000 concurrent writes. Typical web apps generate ~30 concurrent write transactions at this scale. SQLite handles ~120 write transactions/sec in WAL mode (verified: sqlite.org benchmarks + Expensify production case study serving 10M+ users on SQLite). The real constraint is write contention above ~100 concurrent writers, not user count.
+>
+> Sources: 🏛️ sqlite.org WAL documentation, 🛡️ Expensify engineering blog (2024), ⚠️ HN discussion (corroborated)
 
-Ask it why it recommends something — it gives you a conclusion with no visible reasoning chain.
+**The baseline gave a wrong answer confidently. The skill forced source verification and reached the opposite — correct — conclusion.**
 
-Ask it what could go wrong — it lists generic risks that apply to everything and nothing.
+### Before: Default AI Code Review
 
-**These are five distinct reasoning failures. Stack Skills installs a firewall against each one.**
+> **You:** Review this JWT auth module
+>
+> **AI:** The code looks well-structured. Consider adding more comments and using TypeScript for better type safety. Variable naming could be improved in some places.
+
+### After: With `adversarial-review`
+
+> **You:** /adversarial-review Review this JWT auth module
+>
+> **AI:**
+> **Steel-man:** JWT-based stateless auth was chosen for horizontal scaling. The 15-min access + 7-day refresh split balances security and UX.
+>
+> 🔴 **Critical: No refresh token rotation.** A stolen token grants persistent 7-day access with no detection. Fix: implement token family chain rotation.
+>
+> 🟠 **Major: Rate limiting uses in-memory Map().** Resets on restart, bypassed in multi-instance deploys. Fix: move to Redis with TTL.
+>
+> **Verdict: PASS WITH CONDITIONS** — must fix token rotation before deploy.
+
+**The baseline found nothing. The skill found a Critical security vulnerability.**
 
 ---
 
-## Five Failures, Five Firewalls
+## Six Failures, Six Firewalls
 
 | Cognitive Failure | What Happens | Firewall | What It Forces |
 |:---|:---|:---|:---|
+| **Premature closure** | AI rushes to execute on ambiguous requests | `scope-clarifier` | Structured clarification before execution begins |
 | **Hallucination** | AI states claims without verification | `cross-verified-research` | Source-traced, cross-verified claims with S/A/B/C tier grading |
 | **Anchoring bias** | AI locks onto the first "obvious" answer | `creativity-sampler` | 5 probability-weighted options including unconventional alternatives |
 | **Confirmation bias** | AI agrees with you instead of challenging | `adversarial-review` | Steel-man then 3-vector attack. "Looks good" is structurally banned |
-| **Black-box reasoning** | AI gives conclusions without showing why | `reasoning-tracer` | Visible assumption inventory, confidence decomposition, weakest-link analysis |
+| **Black-box reasoning** | AI gives conclusions without showing why | `reasoning-tracer` | Assumption inventory and weakest-link analysis |
 | **Optimism bias** | AI assumes the plan will work | `pre-mortem` | Assumes failure, identifies 5 specific failure scenarios with circuit breakers |
 
 ---
 
 ## Skills
+
+### scope-clarifier
+
+Prevents premature execution on ambiguous requests.
+
+```
+Request → 5W1H Decomposition → Ambiguity Score → Clarify or Proceed
+```
+
+- Breaks every request into 6 dimensions: What, Who, Where, When, Why, How
+- Scores ambiguity (0-6) — clear requests get a green light, ambiguous ones get up to 3 questions
+- Every question includes multiple choice options and a stated default assumption
+- Designed to run FIRST — before any other skill in the chain
+
+```
+Try: /scope-clarifier Build me an auth system
+```
 
 ### cross-verified-research
 
@@ -125,20 +166,34 @@ Try: /pre-mortem We're migrating our monolith to microservices over Q3
 
 ## Which Skill Should I Use?
 
-| Your situation | Skill | Why |
-|:--------------|:------|:----|
-| Researching a technology or verifying a claim | `cross-verified-research` | Source-traced verification prevents hallucination |
-| Choosing between options (DB, framework, architecture) | `creativity-sampler` | Breaks anchoring, surfaces unconventional alternatives |
-| Made a decision, want to stress-test it | `adversarial-review` | Finds real flaws through structured adversarial analysis |
-| Want to understand WHY the AI recommends something | `reasoning-tracer` | Makes assumptions and reasoning chain auditable |
-| Planning a project and want to de-risk it | `pre-mortem` | Identifies specific failure modes before they happen |
+### Daily Use (Flagship)
+
+| Your situation | Skill | Example |
+|:---|:---|:---|
+| Request is vague or has implicit assumptions | `scope-clarifier` | "Build me an auth system" → clarifies SSO? RBAC? OAuth? |
+| Researching a technology or verifying a claim | `cross-verified-research` | "Is gRPC better than REST for mobile?" |
+| Reviewing code, architecture, or a decision | `adversarial-review` | "We chose Kubernetes for our 3-person startup" |
+
+### High-Stakes Moments
+
+| Your situation | Skill | Example |
+|:---|:---|:---|
+| Choosing between options | `creativity-sampler` | "Which database for real-time leaderboard?" |
+| Planning a project, want to de-risk | `pre-mortem` | "We're migrating to microservices in Q3" |
+
+### Deep Analysis
+
+| Your situation | Skill | Example |
+|:---|:---|:---|
+| Want to see WHY the AI recommends something | `reasoning-tracer` | "Why microservices for this project?" |
+| Need full audit trail | `reasoning-tracer --full` | Architecture decision records |
 
 ### Recommended Chains
 
-- **Tech Decision**: `creativity-sampler` → `cross-verified-research` → `adversarial-review`
+- **Any Task**: `scope-clarifier` → [any other skill] (always clarify first)
+- **Tech Decision**: `scope-clarifier` → `creativity-sampler` → `cross-verified-research` → `adversarial-review`
 - **Architecture Review**: `reasoning-tracer` → `adversarial-review`
 - **Project Kickoff**: `pre-mortem` → `creativity-sampler` (for mitigations)
-- **Full Rigor**: `creativity-sampler` → `cross-verified-research` → `adversarial-review` → `pre-mortem`
 
 ---
 
@@ -152,7 +207,9 @@ Your AI's default reasoning:
 
 With Stack Skills:
 
-  [Question]
+  [Request]
+       │
+       ├──→ scope-clarifier ──→ "What EXACTLY do you need?"  (prevents premature closure)
        │
        ├──→ creativity-sampler ──→ "What are ALL the options?"  (breaks anchoring)
        │
@@ -169,22 +226,14 @@ Each firewall is independent — use one, or chain them.
 
 ---
 
-## Benchmark: Baseline vs Stack Skills
+## Why a Skill?
 
-Informal comparison using Claude Opus. Scores are subjective quality ratings (1-10) by the author. We share these to illustrate the *type* of improvement. Your results will vary.
+You could paste these instructions into CLAUDE.md or a system prompt. But:
 
-| Scenario | Baseline | Stack Skills | Change |
-|:---------|:--------:|:-----------:|:------:|
-| Research: "Is SQLite viable for 1000 concurrent users?" | 5/10 | 9/10 | **+80%** |
-| Decision: "Which state management for React e-commerce?" | 5/10 | 9/10 | **+80%** |
-| Review: "Single PostgreSQL for OLTP + analytics?" | 4/10 | 8/10 | **+100%** |
-
-**What changed:**
-- **Research**: Baseline said "use PostgreSQL." With cross-verified-research, it found 1000 concurrent users = ~30 concurrent writes = 120x headroom for SQLite. Completely different conclusion, backed by cited benchmarks.
-- **Decision**: Baseline said "use Zustand." With creativity-sampler, it discovered that *where* you store the cart (server vs client) matters more than *which* library you pick. A better question, not just a better answer.
-- **Review**: Baseline listed 4 generic concerns. With adversarial-review, it found a Critical multi-tenant data leakage via analytics queries — and provided the RLS fix with SQL.
-
-> We welcome community benchmarks — please open an issue with your own before/after comparisons.
+1. **Context efficiency** — Skills load only when triggered (~100 tokens to scan, full instructions only when invoked). A system prompt pays the token cost every message.
+2. **Composability** — Skills chain: `scope-clarifier` → `cross-verified-research` → `adversarial-review`. A monolithic prompt can't be selectively invoked.
+3. **Portability** — `npx skills add` works across Claude Code, Cursor, Copilot. A system prompt is locked to one tool.
+4. **Community** — Skills can be shared, forked, and improved. A prompt in your dotfiles helps only you.
 
 ---
 
@@ -199,6 +248,7 @@ npx skills add whynowlab/stack-skills --all
 ### Individual Skills
 
 ```bash
+npx skills add whynowlab/stack-skills/scope-clarifier
 npx skills add whynowlab/stack-skills/cross-verified-research
 npx skills add whynowlab/stack-skills/adversarial-review
 npx skills add whynowlab/stack-skills/creativity-sampler
@@ -238,4 +288,4 @@ MIT License. See [LICENSE](LICENSE).
 
 ---
 
-**Stack Skills** by [@thestack_ai](https://github.com/whynowlab) — 5 cognitive firewalls for your AI.
+**Stack Skills** by [@thestack_ai](https://github.com/whynowlab) — 6 cognitive firewalls for your AI.
