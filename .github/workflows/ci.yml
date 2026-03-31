@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-skills:
+    name: Validate skill files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required skill structure
+        run: |
+          echo "Checking that all skills have SKILL.md..."
+          errors=0
+          for dir in skills/*/; do
+            skill_name=$(basename "$dir")
+            if [ ! -f "$dir/SKILL.md" ]; then
+              echo "ERROR: $dir is missing SKILL.md"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "Found $errors missing SKILL.md files"
+            exit 1
+          fi
+          echo "All skills have SKILL.md"
+
+      - name: Validate YAML frontmatter
+        run: |
+          echo "Checking YAML frontmatter in all SKILL.md files..."
+          errors=0
+          for f in skills/*/SKILL.md; do
+            skill_name=$(basename "$(dirname "$f")")
+            # Check that frontmatter exists (starts with ---)
+            if ! head -1 "$f" | grep -q '^---$'; then
+              echo "ERROR: $f missing YAML frontmatter opening ---"
+              errors=$((errors + 1))
+              continue
+            fi
+            # Check required fields: name, description
+            frontmatter=$(sed -n '/^---$/,/^---$/p' "$f")
+            if ! echo "$frontmatter" | grep -q '^name:'; then
+              echo "ERROR: $f missing 'name' in frontmatter"
+              errors=$((errors + 1))
+            fi
+            if ! echo "$frontmatter" | grep -q '^description:'; then
+              echo "ERROR: $f missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "Found $errors frontmatter issues"
+            exit 1
+          fi
+          echo "All frontmatter valid"
+
+      - name: Check marketplace.json is valid JSON
+        run: |
+          python3 -c "import json; json.load(open('marketplace.json'))"
+          echo "marketplace.json is valid JSON"
+
+      - name: Check package.json is valid JSON
+        run: |
+          python3 -c "import json; json.load(open('package.json'))"
+          echo "package.json is valid JSON"
+
+      - name: Verify skill count matches README claims
+        run: |
+          skill_count=$(ls -d skills/*/ | wc -l | tr -d ' ')
+          echo "Found $skill_count skills"
+          if [ "$skill_count" -lt 6 ]; then
+            echo "WARNING: README claims 6 firewalls but only $skill_count skills found"
+            exit 1
+          fi
+          echo "Skill count OK"
+
+  markdown-lint:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for broken internal links
+        run: |
+          errors=0
+          # Check that referenced files in README exist
+          for ref in LICENSE marketplace.json package.json; do
+            if [ ! -f "$ref" ]; then
+              echo "ERROR: README references $ref but file not found"
+              errors=$((errors + 1))
+            fi
+          done
+          # Check that referenced asset images exist
+          for img in $(grep -oP 'assets/[^\s")]+' README.md 2>/dev/null || true); do
+            if [ ! -f "$img" ]; then
+              echo "WARNING: README references $img but file not found"
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            exit 1
+          fi
+          echo "Internal links OK"
