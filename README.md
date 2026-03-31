@@ -2,7 +2,7 @@
   <img src="assets/swing-icon.svg" width="80" alt="Swing logo">
 </p>
 
-<h1 align="center">Swing</h1>
+<h1 align="center">Swing — AI Agent Guardrails for Claude Code</h1>
 
 <p align="center">
   <a href="https://github.com/whynowlab/swing-skills/stargazers"><img src="https://img.shields.io/github/stars/whynowlab/swing-skills?style=flat&color=58a6ff" alt="Stars"></a>
